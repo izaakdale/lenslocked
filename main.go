@@ -5,14 +5,18 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 )
 
 func main() {
 	mux := chi.NewRouter()
 
-	mux.Get("/", homeHandler)
+	// mux.Use(middleware.Logger)
+
+	mux.Get("/", middleware.Logger(http.HandlerFunc(homeHandler)).ServeHTTP)
 	mux.Get("/contact", contactHandler)
 	mux.Get("/faq", faqHandler)
+	mux.Get("/galleries/{id}", galleriesHandler)
 	mux.NotFound(notFoundHandler)
 
 	fmt.Println("Starting the server on :3000...")
@@ -45,6 +49,11 @@ func faqHandler(w http.ResponseWriter, r *http.Request) {
   </li>
 </ul>
 `)
+}
+
+func galleriesHandler(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	fmt.Fprintf(w, "<h1>your id is: %s</h1", id)
 }
 
 func notFoundHandler(w http.ResponseWriter, r *http.Request) {
