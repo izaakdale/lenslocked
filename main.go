@@ -2,18 +2,21 @@ package main
 
 import (
 	"fmt"
+	"html/template"
+	"log"
 	"net/http"
+	"path/filepath"
 
+	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
 )
 
 func main() {
 	mux := chi.NewRouter()
 
-	// mux.Use(middleware.Logger)
+	mux.Use(middleware.Logger)
 
-	mux.Get("/", middleware.Logger(http.HandlerFunc(homeHandler)).ServeHTTP)
+	mux.Get("/", homeHandler)
 	mux.Get("/contact", contactHandler)
 	mux.Get("/faq", faqHandler)
 	mux.Get("/galleries/{id}", galleriesHandler)
@@ -24,7 +27,19 @@ func main() {
 }
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "<h1>Welcomen!</h1>")
+	t, err := template.ParseFiles(filepath.Join("templates", "home.gohtml"))
+	if err != nil {
+		log.Printf("error parsing template: %v", err)
+		http.Error(w, "template parse error", http.StatusInternalServerError)
+		return
+	}
+
+	err = t.Execute(w, nil)
+	if err != nil {
+		log.Printf("error executing template: %v", err)
+		http.Error(w, "template execution error", http.StatusInternalServerError)
+		return
+	}
 }
 
 func contactHandler(w http.ResponseWriter, r *http.Request) {
