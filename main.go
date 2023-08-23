@@ -16,23 +16,9 @@ func main() {
 	mux := chi.NewRouter()
 	mux.Use(middleware.Logger)
 
-	tpl, err := views.Parse(filepath.Join("templates", "home.gohtml"))
-	if err != nil {
-		panic(err)
-	}
-	mux.Get("/", controllers.StaticHandler(tpl))
-
-	tpl, err = views.Parse(filepath.Join("templates", "contact.gohtml"))
-	if err != nil {
-		panic(err)
-	}
-	mux.Get("/contact", controllers.StaticHandler(tpl))
-
-	tpl, err = views.Parse(filepath.Join("templates", "faq.gohtml"))
-	if err != nil {
-		panic(err)
-	}
-	mux.Get("/faq", controllers.StaticHandler(tpl))
+	mux.Get("/", controllers.StaticHandler(views.Must(views.Parse(filepath.Join("templates", "home.gohtml")))))
+	mux.Get("/contact", controllers.StaticHandler(views.Must(views.Parse(filepath.Join("templates", "contact.gohtml")))))
+	mux.Get("/faq", controllers.StaticHandler(views.Must(views.Parse(filepath.Join("templates", "faq.gohtml")))))
 
 	mux.NotFound(notFoundHandler)
 
