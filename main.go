@@ -26,8 +26,8 @@ func main() {
 	http.ListenAndServe("localhost:3000", mux)
 }
 
-func homeHandler(w http.ResponseWriter, r *http.Request) {
-	t, err := template.ParseFiles(filepath.Join("templates", "home.gohtml"))
+func executeTemplate(w http.ResponseWriter, path string) {
+	t, err := template.ParseFiles(path)
 	if err != nil {
 		log.Printf("error parsing template: %v", err)
 		http.Error(w, "template parse error", http.StatusInternalServerError)
@@ -42,8 +42,12 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func homeHandler(w http.ResponseWriter, r *http.Request) {
+	executeTemplate(w, filepath.Join("templates", "home.gohtml"))
+}
+
 func contactHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "<h1>Contact</h1><p>To get in touch email me at <a href=\"mailto:izaakdale@live.com\">izaakdale@live.com</a></p>")
+	executeTemplate(w, filepath.Join("templates", "contact.gohtml"))
 }
 func faqHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
