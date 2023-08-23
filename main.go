@@ -2,13 +2,13 @@ package main
 
 import (
 	"fmt"
-	"html/template"
 	"log"
 	"net/http"
 	"path/filepath"
 
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
+	"github.com/izaakdale/lenslocked/views"
 )
 
 func main() {
@@ -27,19 +27,14 @@ func main() {
 }
 
 func executeTemplate(w http.ResponseWriter, path string) {
-	t, err := template.ParseFiles(path)
+	tpl, err := views.Parse(path)
 	if err != nil {
 		log.Printf("error parsing template: %v", err)
 		http.Error(w, "template parse error", http.StatusInternalServerError)
 		return
 	}
 
-	err = t.Execute(w, nil)
-	if err != nil {
-		log.Printf("error executing template: %v", err)
-		http.Error(w, "template execution error", http.StatusInternalServerError)
-		return
-	}
+	tpl.Execute(w, nil)
 }
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
